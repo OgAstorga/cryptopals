@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 
 func hexToIndex(data byte) byte {
   if byte('0') <= data && data <= byte('9') {
@@ -19,8 +17,6 @@ func hexToIndex(data byte) byte {
 func HexToBase64(hex string) string {
   bytes := make([]byte, len(hex)/2)
   const base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-
-  fmt.Println(hex)
 
   for i:=0; i<len(bytes); i += 1 {
     ord1 := hexToIndex(hex[2*i])
