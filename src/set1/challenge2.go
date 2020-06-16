@@ -1,57 +1,63 @@
 package main
 
+import "bytes"
 
-func hexToIx(hex byte) (byte) {
-  if byte('0') <= hex && hex <= byte('9') {
-    return hex - byte('0')
-  }
 
-  if byte('a') <= hex && hex <= byte('f') {
-    return hex - byte('a') + 10
-  }
+func HexToBuffer(hex string) *bytes.Buffer {
+  raw := make([]byte, (len(hex) + 1)/2)
 
-  return hex
-}
-
-func hexToBytes(hex string) ([]byte) {
-  bytes := make([]byte, len(hex) / 2)
-  for i := 0; i < len(hex) / 2; i += 1 {
-    bytes[i] = hexToIx(hex[2*i]) * 16 + hexToIx(hex[2*i + 1])
-  }
-  return bytes
-}
-
-func bytesToHex(bytes []byte) (string) {
-  const base = "0123456789abcdef"
-
-  output := make([]byte, len(bytes) * 2)
-  for i := 0; i < len(bytes) * 2; i += 1 {
-    bit := i * 4
-    index := bit / 8
-    carry := bit % 8
-
-    var char byte
-    switch carry {
-    case 0:
-      char = bytes[index] >> 4
-    case 4:
-      char = bytes[index] % 0b10000
+  var word byte = 0
+  for i:=0; i<len(hex); i += 1 {
+    // Hex to byte
+    if byte('0') <= hex[i] && hex[i] <= byte('9') {
+      word = hex[i] - byte('0')
     }
 
-    output[i] = base[char]
+    if byte('a') <= hex[i] && hex[i] <= byte('f') {
+      word = hex[i] - byte('a') + 10
+    }
+
+    // Append byte in the correct order
+    if i % 2 == 0 {
+      word = word << 4
+    }
+
+    raw[i/2] |= word
   }
 
-  return string(output)
+  return bytes.NewBuffer(raw)
 }
 
-func FixedXOR(hex, xor string) (string) {
-  word1 := hexToBytes(hex)
-  word2 := hexToBytes(xor)
-  word3 := make([]byte, len(word1))
 
-  for i:=0; i<len(word1); i+=1 {
-    word3[i] = word1[i] ^ word2[i]
+func BufferToHex(buffer *bytes.Buffer) string {
+  var base string = "0123456789abcdef"
+  hex := make([]byte, buffer.Len()*2)
+  ix := 0
+
+  for buffer.Len() > 0 {
+    word, _ := buffer.ReadByte()
+    h1 := word / (1 << 4)
+    h2 := word % (1 << 4)
+    hex[ix] = base[h1]
+    hex[ix + 1] = base[h2]
+    ix += 2
   }
 
-  return bytesToHex(word3)
+  return string(hex)
+}
+
+
+func FixedXOR(data_hex string, chiper_hex string) string {
+  data := HexToBuffer(data_hex)
+  chiper := HexToBuffer(chiper_hex)
+  xor := bytes.NewBufferString("")
+
+  for data.Len() > 0 {
+    a, _ := data.ReadByte()
+    b, _ := chiper.ReadByte()
+
+    xor.WriteByte(a ^ b)
+  }
+
+  return BufferToHex(xor)
 }
