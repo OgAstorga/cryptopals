@@ -1,7 +1,6 @@
 package set1
 
 import "math"
-import "../utils"
 
 
 // from https://en.wikipedia.org/wiki/Letter_frequency
@@ -56,9 +55,7 @@ func CalcHistogram(text string) []int {
 }
 
 
-func DecryptSingleByteXOR(hex string) ([]byte, float64) {
-  encrypted := utils.HexToBytes(hex)
-
+func BreakSingleByteXOR(encrypted []byte) ([]byte, float64) {
   idealHistogram := make([]int, 27)
   for i:=0; i<27; i+=1 {
     idealHistogram[i] = int(math.Round(engHistogram[i] * float64(len(encrypted))))

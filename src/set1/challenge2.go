@@ -1,10 +1,7 @@
 package set1
 
-import "../utils"
 
-func FixedXOR(data_hex string, chiper_hex string) string {
-  data := utils.HexToBytes(data_hex)
-  chiper := utils.HexToBytes(chiper_hex)
+func FixedXOR(data []byte, chiper []byte) []byte {
   xor := make([]byte, len(data))
 
   // Assert len(data) == len(chiper)
@@ -13,5 +10,5 @@ func FixedXOR(data_hex string, chiper_hex string) string {
     xor[i] = data[i] ^ chiper[i]
   }
 
-  return utils.BytesToHex(xor)
+  return xor
 }

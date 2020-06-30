@@ -4,6 +4,7 @@ import (
 	"os"
 	"bufio"
 	"testing"
+  "../utils"
 )
 
 
@@ -16,13 +17,13 @@ func TestChallenge4(t *testing.T) {
 	}
 	defer file.Close()
 
-	var hexs []string 
+	var words [][]byte
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		hexs = append(hexs, scanner.Text())
+		words = append(words, utils.HexToBytes(scanner.Text()))
 	}
 
-	answer, _ := DetectSingleByteXOR(hexs)
+	answer, _ := DetectSingleByteXOR(words)
 
 	if excepted != string(answer) {
     t.Errorf("Excepted '%s'; got '%s'", excepted, answer)
