@@ -55,13 +55,14 @@ func CalcHistogram(text string) []int {
 }
 
 
-func BreakSingleByteXOR(encrypted []byte) ([]byte, float64) {
+func BreakSingleByteXOR(encrypted []byte) ([]byte, byte, float64) {
   idealHistogram := make([]int, 27)
   for i:=0; i<27; i+=1 {
     idealHistogram[i] = int(math.Round(engHistogram[i] * float64(len(encrypted))))
   }
 
   var guess []byte
+  var guess_key byte
   var guess_score float64 = 1000000.0
 
   for key:=0; key<256; key+=1 {
@@ -74,9 +75,10 @@ func BreakSingleByteXOR(encrypted []byte) ([]byte, float64) {
 
     if score < guess_score {
       guess = decrypted
+      guess_key = byte(key)
       guess_score = score
     }
   }
 
-  return guess, guess_score
+  return guess, guess_key, guess_score
 }
